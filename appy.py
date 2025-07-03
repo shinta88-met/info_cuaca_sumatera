@@ -8,7 +8,7 @@ from datetime import datetime
 
 # Konfigurasi halaman Streamlit
 st.set_page_config(page_title="Prakiraan Cuaca Wilayah Sumatera Selatan", layout="wide")
-st.title("📡 Global Forecast System Viewer (Realtime via NOMADS) – Visualisasi Prakiraan Cuaca Sumatera Bagian Selatan Ekuator: Jambi, Bengkulu, Sumsel, Lampung")
+st.title("📡 Global Forecast System Viewer (Realtime via NOMADS) – Visualisasi Prakiraan Cuaca Sumatera Bagian Selatan: Jambi, Bengkulu, Sumsel, Lampung")
 st.header("Web Hasil Pembelajaran Pengelolaan Informasi Meteorologi")
 st.subheader("UAS SHINTA MEDIANY_M8TB_14.24.0012")
 
