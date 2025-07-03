@@ -6,7 +6,7 @@ import cartopy.feature as cfeature
 import pandas as pd
 from datetime import datetime
 
-# Konfigurasi halaman
+# Konfigurasi halaman Streamlit
 st.set_page_config(page_title="GFS Sumatera Selatan Viewer", layout="wide")
 st.title("📡 GFS Viewer – Sumatera Bagian Selatan Ekuator")
 st.header("Visualisasi Prakiraan Cuaca: Jambi, Bengkulu, Sumsel, Lampung")
@@ -17,9 +17,8 @@ def load_dataset(run_date, run_hour):
     ds = xr.open_dataset(base_url)
     return ds
 
-# Sidebar: Input pengguna
+# Sidebar input
 st.sidebar.title("⚙️ Pengaturan")
-
 today = datetime.utcnow()
 run_date = st.sidebar.date_input("Tanggal Run GFS (UTC)", today.date())
 run_hour = st.sidebar.selectbox("Jam Run GFS (UTC)", ["00", "06", "12", "18"])
@@ -72,27 +71,32 @@ if st.sidebar.button("🔎 Tampilkan Visualisasi"):
         st.warning("❗ Parameter tidak dikenali atau tidak tersedia.")
         st.stop()
 
-    # 🔍 Filter wilayah: Sumatera Selatan Ekuator
+    # 🔍 Filter wilayah Sumatera Selatan ekuator
     var = var.sel(lat=slice(-6.0, 0.5), lon=slice(101.0, 106.5))
     if is_vector:
         u = u.sel(lat=slice(-6.0, 0.5), lon=slice(101.0, 106.5))
         v = v.sel(lat=slice(-6.0, 0.5), lon=slice(101.0, 106.5))
 
-    # 🎨 Buat figure
+    # 🎨 Buat plot
     fig = plt.figure(figsize=(10, 7))
     ax = plt.axes(projection=ccrs.PlateCarree())
     ax.set_extent([101.0, 106.5, -6.0, 0.5], crs=ccrs.PlateCarree())
 
-    # 🕒 Valid time
+    # Valid time
     valid_time = ds.time[forecast_hour].values
     valid_dt = pd.to_datetime(str(valid_time))
     valid_str = valid_dt.strftime("%HUTC %a %d %b %Y")
     tstr = f"t+{forecast_hour:03d}"
 
-    ax.set_title(f"{label} Valid {valid_str}", loc="left", fontsize=10, fontweight="bold")
-    ax.set_title(f"GFS {tstr}", loc="right", fontsize=10, fontweight="bold")
+    # Judul peta di tengah
+    ax.set_title(f"{label} – Valid {valid_str} | GFS {tstr}",
+                 fontsize=11, fontweight="bold", loc="center")
 
-    # 🗺️ Grid dan fitur
+    # Tambahkan nama UAS di bawah judul
+    fig.text(0.5, 0.92, "UAS SHINTA MEDIANY_M8TB_14.24.0012",
+             fontsize=10, ha='center', va='top', fontstyle='italic')
+
+    # Grid garis lintang/bujur
     gl = ax.gridlines(draw_labels=True, linewidth=0.5, color='gray', alpha=0.5, linestyle='--')
     gl.top_labels = gl.right_labels = False
     ax.coastlines(resolution='10m', linewidth=0.8)
@@ -110,7 +114,7 @@ if st.sidebar.button("🔎 Tampilkan Visualisasi"):
             ax.quiver(var.lon[::5], var.lat[::5], u.values[::5, ::5], v.values[::5, ::5], transform=ccrs.PlateCarree(),
                       scale=700, width=0.002, color='black')
 
-    # 📍 Marker lokasi kota & kabupaten
+    # 📍 Marker lokasi kota
     locations = [
         # Jambi
         {"nama": "Kota Jambi", "lat": -1.6100, "lon": 103.6100},
@@ -131,7 +135,6 @@ if st.sidebar.button("🔎 Tampilkan Visualisasi"):
         {"nama": "Metro", "lat": -5.1135, "lon": 105.3068},
         {"nama": "Lampung Selatan", "lat": -5.5623, "lon": 105.5470}
     ]
-
     for loc in locations:
         ax.plot(loc["lon"], loc["lat"], marker='o', color='red', markersize=4,
                 transform=ccrs.PlateCarree())
@@ -139,7 +142,7 @@ if st.sidebar.button("🔎 Tampilkan Visualisasi"):
                 fontsize=7, transform=ccrs.PlateCarree(), color='black',
                 bbox=dict(facecolor='white', alpha=0.6, edgecolor='none'))
 
-    # 🏛️ Label provinsi besar
+    # Label provinsi
     provinsi = [
         {"nama": "Jambi", "lat": -1.7, "lon": 103.7},
         {"nama": "Bengkulu", "lat": -3.9, "lon": 102.3},
@@ -150,7 +153,7 @@ if st.sidebar.button("🔎 Tampilkan Visualisasi"):
         ax.text(p["lon"], p["lat"], p["nama"], fontsize=11, fontweight='bold',
                 transform=ccrs.PlateCarree(), color='blue')
 
-    # Tampilkan ke Streamlit
+    plt.tight_layout()
     st.pyplot(fig)
 
     st.markdown(f"""
