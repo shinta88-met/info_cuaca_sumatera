@@ -7,9 +7,10 @@ import pandas as pd
 from datetime import datetime
 
 # Konfigurasi halaman Streamlit
-st.set_page_config(page_title="GFS Sumatera Selatan Viewer", layout="wide")
-st.title("📡 GFS Viewer – Sumatera Bagian Selatan Ekuator")
-st.header("Visualisasi Prakiraan Cuaca: Jambi, Bengkulu, Sumsel, Lampung")
+st.set_page_config(page_title="Prakiraan Cuaca Wilayah Sumatera Selatan", layout="wide")
+st.title("📡 Global Forecast System Viewer (Realtime via NOMADS) – Visualisasi Prakiraan Cuaca Sumatera Bagian Selatan Ekuator: Jambi, Bengkulu, Sumsel, Lampung")
+st.header("Web Hasil Pembelajaran Pengelolaan Informasi Meteorologi")
+st.subheader("UAS SHINTA MEDIANY_M8TB_14.24.0012", layout="italic")
 
 @st.cache_data
 def load_dataset(run_date, run_hour):
@@ -92,11 +93,7 @@ if st.sidebar.button("🔎 Tampilkan Visualisasi"):
     ax.set_title(f"{label} – Valid {valid_str} | GFS {tstr}",
                  fontsize=11, fontweight="bold", loc="center")
 
-    # Tambahkan nama UAS di bawah judul
-    fig.text(0.5, 0.92, "UAS SHINTA MEDIANY_M8TB_14.24.0012",
-             fontsize=10, ha='center', va='top', fontstyle='italic')
-
-    # Grid garis lintang/bujur
+        # Grid garis lintang/bujur
     gl = ax.gridlines(draw_labels=True, linewidth=0.5, color='gray', alpha=0.5, linestyle='--')
     gl.top_labels = gl.right_labels = False
     ax.coastlines(resolution='10m', linewidth=0.8)
